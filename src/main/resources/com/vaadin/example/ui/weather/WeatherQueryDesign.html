@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+ <meta charset="UTF-8">
+ <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+ <meta name="vaadin-version" content="8.0.5">
+ <meta name="package-mapping" content="com_vaadin_example_ui:com.vaadin.example.ui">
+ <meta name="package-mapping" content="com_vaadin_example_ui_weather:com.vaadin.example.ui.weather">
+</head>
+<body>
+<vaadin-vertical-layout size-full>
+ <vaadin-vertical-layout size-auto :middle :center>
+  <vaadin-button plain-text _id="queryWeather" :middle :center>
+   Get weather for your location
+  </vaadin-button>
+  <vaadin-progress-bar visible="false" indeterminate _id="loadingIndicator" :middle :center></vaadin-progress-bar>
+  <com_vaadin_example_ui_weather-weather-display visible="false" _id="weatherDisplay" :middle :center></com_vaadin_example_ui_weather-weather-display>
+ </vaadin-vertical-layout>
+</vaadin-vertical-layout>
+</body>
+</html>
