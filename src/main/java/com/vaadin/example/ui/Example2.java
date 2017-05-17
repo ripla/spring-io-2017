@@ -45,9 +45,8 @@ public class Example2 extends UI {
         streamSubscription = clickStream
                 .doOnNext(e -> startLoading())
                 .flatMap(click -> geolocationStream)
-                .flatMap(
-                        gl -> weatherService.getCurrentHourlyWeather(gl.getLatitude(),
-                                gl.getLongitude()))
+                .flatMap(gl -> weatherService.getCurrentHourlyWeather(
+                        gl.getLatitude(), gl.getLongitude()))
                 .subscribe(this::showResult);
 
         addDetachListener(e -> streamSubscription.dispose());
@@ -93,7 +92,7 @@ public class Example2 extends UI {
 
             geolocationFluxSink
                     .onDispose(listenerRegistration::remove)
-                    .onRequest(count -> geolocationExtension.askLocation());
+                    .onRequest(c -> geolocationExtension.askLocation());
         }, FluxSink.OverflowStrategy.LATEST);
     }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "spring-io-2017-example",
+  "short_name": "io-example",
+  "icons": [{
+    "src": "images/vaadin-logo-icon.png",
+    "sizes": "128x128",
+    "type": "image/png"
+  }],
+  "start_url": "/index.html",
+  "display": "standalone"
+}

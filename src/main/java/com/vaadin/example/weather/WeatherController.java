@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vaadin.example.weather.dto.WeatherData;
+import com.vaadin.example.weather.dto.WeatherResult;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 @RestController
@@ -26,12 +28,19 @@ public class WeatherController {
             @PathVariable double longitude) {
 
         return Flux.zip(
-                Flux.interval(Duration.ofSeconds(0), Duration.ofSeconds(5)),
+                Flux.interval(Duration.ofSeconds(0), Duration.ofSeconds(1)),
                 weatherService.getCurrentHourlyWeather(latitude, longitude)
                         .map(weatherResult -> weatherResult.getHourly()
                                 .getData())
                         .flatMapMany(Flux::fromIterable))
                 .map(Tuple2::getT2)
                 .share();
+    }
+
+    @GetMapping(value = "/weather/current/{latitude},{longitude}")
+    @ResponseBody
+    Mono<WeatherResult> fetchCurrentWeather(@PathVariable double latitude,
+            @PathVariable double longitude) {
+        return weatherService.getCurrentHourlyWeather(latitude, longitude);
     }
 }

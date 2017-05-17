@@ -1,0 +1,104 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-card/paper-card.html">
+<link rel="import" href="bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="weather-query">
+
+    <template>
+        <custom-style>
+            <style include="iron-flex iron-flex-alignment">
+                .container {
+                    width: 100%;
+                    height: 100%;
+
+                    @apply --layout-vertical;
+                    @apply --layout-center;
+                    @apply --layout-center-justified;
+                }
+
+                paper-card {
+                    margin: 15px;
+                    font-family: "Open Sans", sans-serif;
+                    font-color: #464646;
+                }
+
+                #temperature, #shortSummary {
+                    font-weight: 500;
+                    font-size: 26px;
+                }
+
+                #longSummary {
+                    font-size: 20px;
+                }
+            </style>
+        </custom-style>
+
+        <div class="container">
+            <paper-button
+                    id="queryButton"
+                    raised
+                    on-tap="getWeather">
+                Get weather for location
+            </paper-button>
+
+            <iron-ajax id="weatherRequest"
+                       url="/weather/current/[[latitude]],[[longitude]]"
+                       handle-as="json"
+                       last-response="{{item}}">
+            </iron-ajax>
+
+            <dom-if if="[[item]]">
+                <template>
+                    <paper-card>
+                        <div class="card-content">
+                            <span id="temperature">[[item.currently.temperature]] ˚</span>
+                            <span id="shortSummary">[[item.currently.summary]]</span>
+                            <div id="longSummary">[[item.hourly.summary]]</div>
+                        </div>
+                    </paper-card>
+                </template>
+            </dom-if>
+        </div>
+    </template>
+
+    <script>
+        class WeatherQuery extends Polymer.Element {
+
+            static get is() {
+                return 'weather-query';
+            }
+
+            static get properties() {
+                return {
+                    item: {
+                        type: Object,
+                        value: () => {
+                        }
+                    },
+
+                    latitude: Number,
+                    longitude: Number
+                };
+            }
+
+            getWeather() {
+                navigator.geolocation.getCurrentPosition(result => this._showWeather(result.coords.latitude, result.coords.longitude));
+            }
+
+            _showWeather(latitude, longitude) {
+                this.latitude = latitude;
+                this.longitude = longitude;
+
+                this.$.weatherRequest.generateRequest();
+            }
+
+
+        }
+
+        customElements.define(WeatherQuery.is, WeatherQuery);
+
+    </script>
+</dom-module>

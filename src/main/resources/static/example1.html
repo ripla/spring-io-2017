@@ -1,0 +1,95 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-card/paper-button.html">
+<link rel="import" href="bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="weather-query">
+
+    <template>
+        <custom-style>
+            <style include="iron-flex iron-flex-alignment">
+                .container {
+                    width: 100%;
+                    height: 100%;
+                    @apply --layout-vertical;
+                    @apply --layout-center;
+                    @apply --layout-center-justified;
+                }
+
+                #grid {
+                    margin-top: 1em;
+                    width: 50%;
+                }
+            </style>
+        </custom-style>
+
+
+        <div class="container">
+            <paper-button
+                    id="queryButton"
+                    raised
+                    on-tap="getWeather">
+                Get weather for location
+            </paper-button>
+
+            <vaadin-grid id="grid" items="{{items}}">
+                <vaadin-grid-column>
+                    <template class="header">Time</template>
+                    <template>[[_formatTime(item.time)]]</template>
+                </vaadin-grid-column>
+
+                <vaadin-grid-column>
+                    <template class="header">Summary</template>
+                    <template>[[item.summary]]</template>
+                </vaadin-grid-column>
+
+                <vaadin-grid-column>
+                    <template class="header">Temperature</template>
+                    <template>[[item.temperature]]</template>
+                </vaadin-grid-column>
+            </vaadin-grid>
+        </div>
+    </template>
+
+    <script>
+        class WeatherQuery extends Polymer.Element {
+
+            static get is() {
+                return 'weather-query';
+            }
+
+            static get properties() {
+                return {
+                    items: {
+                        type: Array,
+                        value: () => []
+                    }
+                };
+            }
+
+            getWeather() {
+                navigator.geolocation.getCurrentPosition(result =>
+                    this._showWeatherStream(result.coords.latitude, result.coords.longitude));
+            }
+
+            _showWeatherStream(latitude, longitude) {
+                //41.390355,2.136259
+                const eventSourceUrl = "/weather/hourly/feed/" + latitude + "," + longitude;
+                const eventsource = new EventSource(eventSourceUrl);
+
+                eventsource.onmessage = e => {
+                    console.log("Updating data");
+                    this.push('items', JSON.parse(e.data));
+                }
+            }
+
+            _formatTime(time) {
+                const date = new Date(time);
+                return date.toLocaleTimeString();
+            }
+        }
+
+        customElements.define(WeatherQuery.is, WeatherQuery);
+
+    </script>
+</dom-module>
