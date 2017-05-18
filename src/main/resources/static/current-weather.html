@@ -5,7 +5,7 @@
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
 
-<dom-module id="weather-query">
+<dom-module id="current-weather">
 
     <template>
         <custom-style>
@@ -65,18 +65,17 @@
     </template>
 
     <script>
-        class WeatherQuery extends Polymer.Element {
+        class CurrentWeather extends Polymer.Element {
 
             static get is() {
-                return 'weather-query';
+                return 'current-weather';
             }
 
             static get properties() {
                 return {
                     item: {
                         type: Object,
-                        value: () => {
-                        }
+                        value: () => {}
                     },
 
                     latitude: Number,
@@ -85,20 +84,14 @@
             }
 
             getWeather() {
-                navigator.geolocation.getCurrentPosition(result => this._showWeather(result.coords.latitude, result.coords.longitude));
-            }
-
-            _showWeather(latitude, longitude) {
-                this.latitude = latitude;
-                this.longitude = longitude;
+                this.latitude = 41.390355;
+                this.longitude = 2.136259;
 
                 this.$.weatherRequest.generateRequest();
             }
-
-
         }
 
-        customElements.define(WeatherQuery.is, WeatherQuery);
+        customElements.define(CurrentWeather.is, CurrentWeather);
 
     </script>
 </dom-module>

@@ -20,12 +20,6 @@ public class WeatherDisplay extends WeatherDisplayDesign{
         this.shortSummary.setValue(result.getCurrently().getSummary());
         this.longSummary.setValue(result.getHourly().getSummary());
 
-//        this.wind.setValue(result.getCurrently().getWindSpeed() + " m/s");
-//        this.humidity.setValue(result.getCurrently().getHumidity() + " %");
-//        this.dewpt.setValue(result.getCurrently().getDewPoint() + "˚");
-//        this.visibility.setValue(result.getCurrently().getVisibility() + " km");
-//        this.pressure.setValue(result.getCurrently().getPressure() + " hPa");
-
         grid.setItems(result.getHourly().getData());
     }
 }

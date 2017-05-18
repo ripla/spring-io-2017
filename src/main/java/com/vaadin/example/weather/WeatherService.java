@@ -28,7 +28,6 @@ public class WeatherService {
                                 "minutely,daily,alerts,flags")
                         .build(apiKey, latitude, longitude))
                 .retrieve()
-                .bodyToMono(WeatherResult.class)
-                .log();
+                .bodyToMono(WeatherResult.class);
     }
 }

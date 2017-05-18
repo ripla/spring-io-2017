@@ -33,8 +33,7 @@ public class WeatherController {
                         .map(weatherResult -> weatherResult.getHourly()
                                 .getData())
                         .flatMapMany(Flux::fromIterable))
-                .map(Tuple2::getT2)
-                .share();
+                .map(Tuple2::getT2);
     }
 
     @GetMapping(value = "/weather/current/{latitude},{longitude}")

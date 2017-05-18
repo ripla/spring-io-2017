@@ -16,7 +16,9 @@ public abstract class PriceResult {
 
     public abstract boolean isSuccess();
 
-    public static class PriceResultSuccess extends PriceResult {
+    public abstract boolean isFailure();
+
+    public static final class PriceResultSuccess extends PriceResult {
         private final double price;
 
         private PriceResultSuccess(double price) {
@@ -37,10 +39,15 @@ public abstract class PriceResult {
         public boolean isSuccess() {
             return true;
         }
+
+        @Override
+        public boolean isFailure() {
+            return false;
+        }
     }
 
 
-    public static class PriceResultFailure extends PriceResult {
+    public static final class PriceResultFailure extends PriceResult {
         private final String message;
 
         private PriceResultFailure(String message) {
@@ -60,6 +67,11 @@ public abstract class PriceResult {
         @Override
         public boolean isSuccess() {
             return false;
+        }
+
+        @Override
+        public boolean isFailure() {
+            return true;
         }
     }
 }

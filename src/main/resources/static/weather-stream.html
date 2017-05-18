@@ -1,9 +1,9 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="bower_components/paper-card/paper-button.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-<dom-module id="weather-query">
+<dom-module id="weather-stream">
 
     <template>
         <custom-style>
@@ -25,14 +25,16 @@
 
 
         <div class="container">
+
             <paper-button
+                    class="indigo"
                     id="queryButton"
                     raised
                     on-tap="getWeather">
                 Get weather for location
             </paper-button>
 
-            <vaadin-grid id="grid" items="{{items}}">
+            <vaadin-grid id="grid" items="[[items]]">
                 <vaadin-grid-column>
                     <template class="header">Time</template>
                     <template>[[_formatTime(item.time)]]</template>
@@ -48,14 +50,15 @@
                     <template>[[item.temperature]]</template>
                 </vaadin-grid-column>
             </vaadin-grid>
+
         </div>
     </template>
 
     <script>
-        class WeatherQuery extends Polymer.Element {
+        class WeatherStream extends Polymer.Element {
 
             static get is() {
-                return 'weather-query';
+                return 'weather-stream';
             }
 
             static get properties() {
@@ -89,7 +92,7 @@
             }
         }
 
-        customElements.define(WeatherQuery.is, WeatherQuery);
+        customElements.define(WeatherStream.is, WeatherStream);
 
     </script>
 </dom-module>

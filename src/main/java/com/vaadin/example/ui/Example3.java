@@ -8,8 +8,10 @@ import com.vaadin.annotations.Push;
 import com.vaadin.example.insurance.AgeRange;
 import com.vaadin.example.insurance.City;
 import com.vaadin.example.insurance.InsuranceService;
+import com.vaadin.example.insurance.PriceResult;
 import com.vaadin.example.ui.reactive.ReactiveComboBox;
 import com.vaadin.example.ui.reactive.ReactiveLabel;
+import com.vaadin.example.ui.reactive.ReactiveNotification;
 import com.vaadin.example.ui.reactive.ReactiveRadioButtonGroup;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
@@ -27,30 +29,60 @@ import reactor.core.publisher.Flux;
 public class Example3 extends UI {
 
     @Autowired
-    InsuranceService insuranceService;
+    private InsuranceService insuranceService;
+
+    private ReactiveRadioButtonGroup<AgeRange> ageSelector;
+    private ReactiveComboBox<City> citySelector;
+    private ReactiveLabel priceLabel;
 
     @Override
     protected void init(VaadinRequest request) {
+        setupLayout();
+
+        Flux<AgeRange> ageRangeStream = ageSelector.getValueStream();
+
+        Flux<City> cityStream = citySelector.getValueStream();
+
+        Flux<PriceResult> priceStream = Flux.combineLatest(ageRangeStream,
+                cityStream,
+                (ageRange, city) -> insuranceService.calculatePrice(ageRange,
+                        city))
+                .share();
+
+        priceLabel.setValueStream(priceStream.filter(PriceResult::isSuccess)
+                .map(r -> Double.toString(r.getPrice()) + " €"));
+
+        priceLabel.setVisible(priceStream.map(PriceResult::isSuccess));
+
+        ReactiveNotification.setErrorNotificationStream(getUI(),
+                priceStream.filter(PriceResult::isFailure)
+                        .map(PriceResult::getError));
+    }
+
+    private void setupLayout() {
         VerticalLayout container = new VerticalLayout();
         container.setSizeFull();
 
         Panel panel = new Panel("Insurance price calculator");
         panel.setHeight("200px");
+        panel.setWidth("-1");
 
         HorizontalLayout layout = new HorizontalLayout();
         layout.setMargin(true);
-        layout.setSizeFull();
+        layout.setHeight("100%");
 
-        ReactiveRadioButtonGroup<AgeRange> ageSelector = new ReactiveRadioButtonGroup<>(
-                "Age" + " range", Arrays.asList(AgeRange.values()));
+        ageSelector = new ReactiveRadioButtonGroup<>("Age range",
+                Arrays.asList(AgeRange.values()));
         ageSelector.setItemCaptionGenerator(AgeRange::getCaption);
 
-        ReactiveComboBox<City> citySelector = new ReactiveComboBox<>("City",
+        citySelector = new ReactiveComboBox<>("City",
                 Arrays.asList(City.values()));
+        citySelector.setEmptySelectionAllowed(false);
 
-        ReactiveLabel priceLabel = new ReactiveLabel();
-        priceLabel.setCaption("");
+        priceLabel = new ReactiveLabel();
+        priceLabel.setCaption("Insurance price");
         priceLabel.setStyleName(ValoTheme.LABEL_HUGE);
+        priceLabel.setVisible(false);
 
         layout.addComponents(ageSelector, citySelector, priceLabel);
         layout.setComponentAlignment(citySelector, Alignment.MIDDLE_CENTER);
@@ -60,23 +92,5 @@ public class Example3 extends UI {
         container.addComponent(panel);
         container.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
         setContent(container);
-
-        Flux<AgeRange> ageRangeStream = ageSelector.getValueStream();
-
-        Flux<City> cityStream = citySelector.getValueStream();
-
-        Flux<String> priceStream = Flux.combineLatest(ageRangeStream,
-                cityStream,
-                (ageRange, city) -> insuranceService.calculatePrice(ageRange,
-                        city))
-                .map(price -> {
-                    if (price.isSuccess()) {
-                        return Double.toString(price.getPrice()) + " €";
-                    } else {
-                        return price.getError();
-                    }
-                });
-
-        priceLabel.setValueStream(priceStream);
     }
 }

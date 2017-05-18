@@ -17,7 +17,7 @@ import com.vaadin.ui.UI;
 
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 
 @SpringUI(path = "/example2")
 @Push
@@ -27,7 +27,6 @@ public class Example2 extends UI {
     private WeatherService weatherService;
 
     private WeatherQueryView mainView;
-    private GeolocationExtension geolocationExtension;
 
     private Disposable streamSubscription;
 
@@ -36,7 +35,7 @@ public class Example2 extends UI {
         mainView = new WeatherQueryView();
         setContent(mainView);
 
-        Flux<Geolocation> geolocationStream = createGeolocationStream(
+        Mono<Geolocation> geolocationStream = createGeolocationStream(
                 new GeolocationExtension(this));
 
         Flux<Button.ClickEvent> clickStream = createWeatherClickStream(
@@ -81,18 +80,20 @@ public class Example2 extends UI {
         });
     }
 
-    private Flux<Geolocation> createGeolocationStream(
+    private Mono<Geolocation> createGeolocationStream(
             GeolocationExtension geolocationExtension) {
-        return Flux.create(geolocationFluxSink -> {
-            GeolocationListener locationListener = e -> geolocationFluxSink.next(
+        return Mono.create(geolocationFluxSink -> {
+            GeolocationListener locationListener = e -> geolocationFluxSink
+                    .success(
                     e.getLocation());
 
             Registration listenerRegistration = geolocationExtension.addGeolocationListener(
                     locationListener);
 
+            geolocationExtension.askLocation();
+
             geolocationFluxSink
-                    .onDispose(listenerRegistration::remove)
-                    .onRequest(c -> geolocationExtension.askLocation());
-        }, FluxSink.OverflowStrategy.LATEST);
+                    .onDispose(listenerRegistration::remove);
+        });
     }
 }

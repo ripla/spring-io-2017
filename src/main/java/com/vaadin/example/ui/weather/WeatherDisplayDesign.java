@@ -23,11 +23,6 @@ public class WeatherDisplayDesign extends VerticalLayout {
     protected Label temperature;
     protected Label shortSummary;
     protected Label longSummary;
-    protected Label wind;
-    protected Label humidity;
-    protected Label dewpt;
-    protected Label visibility;
-    protected Label pressure;
     protected Grid<WeatherData> grid;
 
     public WeatherDisplayDesign() {

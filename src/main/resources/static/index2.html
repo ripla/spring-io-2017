@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
 
+    <link rel="manifest" href="manifest.json">
+    <script src="bower_components/sw-toolbox/companion.js" data-service-worker="/my-service-worker.js"></script>
+
     <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="weather-stream.html">
+    <link rel="import" href="current-weather.html">
     <style>
         html, body {
             margin: 0;
@@ -12,11 +15,12 @@
             height: 100%;
             width: 100%;
         }
+
     </style>
 </head>
 <body>
 
-<weather-stream></weather-stream>
+<current-weather></current-weather>
 
 </body>
 </html>
