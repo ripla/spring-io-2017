@@ -49,13 +49,16 @@ public class Example3 extends UI {
                         city))
                 .share();
 
-        priceLabel.setValueStream(priceStream.filter(PriceResult::isSuccess)
+        priceLabel.setValueStream(priceStream
+                .filter(PriceResult::isSuccess)
                 .map(r -> Double.toString(r.getPrice()) + " €"));
 
-        priceLabel.setVisible(priceStream.map(PriceResult::isSuccess));
+        priceLabel.setVisible(priceStream
+                .map(PriceResult::isSuccess));
 
         ReactiveNotification.setErrorNotificationStream(getUI(),
-                priceStream.filter(PriceResult::isFailure)
+                priceStream
+                        .filter(PriceResult::isFailure)
                         .map(PriceResult::getError));
     }
 

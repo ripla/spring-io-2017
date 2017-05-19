@@ -35,7 +35,7 @@ public class Example2 extends UI {
         mainView = new WeatherQueryView();
         setContent(mainView);
 
-        Mono<Geolocation> geolocationStream = createGeolocationStream(
+        Mono<Geolocation> currentLocation = createGeolocationMono(
                 new GeolocationExtension(this));
 
         Flux<Button.ClickEvent> clickStream = createWeatherClickStream(
@@ -43,7 +43,7 @@ public class Example2 extends UI {
 
         streamSubscription = clickStream
                 .doOnNext(e -> startLoading())
-                .flatMap(click -> geolocationStream)
+                .flatMap(click -> currentLocation)
                 .flatMap(gl -> weatherService.getCurrentHourlyWeather(
                         gl.getLatitude(), gl.getLongitude()))
                 .subscribe(this::showResult);
@@ -80,10 +80,10 @@ public class Example2 extends UI {
         });
     }
 
-    private Mono<Geolocation> createGeolocationStream(
+    private Mono<Geolocation> createGeolocationMono(
             GeolocationExtension geolocationExtension) {
-        return Mono.create(geolocationFluxSink -> {
-            GeolocationListener locationListener = e -> geolocationFluxSink
+        return Mono.create(geolocationMonoSink -> {
+            GeolocationListener locationListener = e -> geolocationMonoSink
                     .success(
                     e.getLocation());
 
@@ -92,7 +92,7 @@ public class Example2 extends UI {
 
             geolocationExtension.askLocation();
 
-            geolocationFluxSink
+            geolocationMonoSink
                     .onDispose(listenerRegistration::remove);
         });
     }
